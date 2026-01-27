@@ -56,8 +56,8 @@ const ActiveLearningView = View.extend({
         router.setQuery(); // Ensure we can get the folder from the router
         this.trainingDataFolderId = router.getQuery('folder');
         // TODO create a plugin-level settings for these
-        this.activeLearningJobUrl = 'dsarchive_superpixel_latest/SuperpixelClassification';
-        this.activeLearningJobType = 'dsarchive/superpixel:latest#SuperpixelClassification';
+        this.activeLearningJobUrl = 'pesktux_superpixel_latest/SuperpixelClassification';
+        this.activeLearningJobType = 'pesktux/superpixel:latest#SuperpixelClassification';
         this.imageItemsById = {};
         this.availableImages = [];
         this.annotationsByImageId = {};
@@ -568,6 +568,10 @@ const ActiveLearningView = View.extend({
             const image = imageAndJob[0].split(':')[0];
             const version = imageAndJob[0].split(':')[1];
             const jobInfo = ((dockerImages[image] || {})[version] || {})[imageAndJob[1]];
+            console.log(imageAndJob)
+            console.log(image)
+            console.log(version)
+            console.log(jobInfo)
             if (!jobInfo) {
                 console.error('Unable to find specified superpixel classification image.');
                 throw new Error('Unable to find specified superpixel classification image.');
