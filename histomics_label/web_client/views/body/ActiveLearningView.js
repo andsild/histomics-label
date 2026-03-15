@@ -462,11 +462,24 @@ const ActiveLearningView = View.extend({
         _.forEach(pixelmapElement.values, (value, index) => {
             const category = dataValuesToCategoryId.get(value);
             const newValue = categoryIdToNewDataValue.get(category);
+
+            if (!_.isNumber(newValue)) {
+                // console.warn('Skipping pixelmap value with unmapped category.', {
+                //     imageId,
+                //     index,
+                //     value,
+                //     category
+                // });
+                pixelmapElement.values[index] = 0;
+                return;
+            }
+
             pixelmapElement.values[index] = newValue;
-            if (newValue !== 0) {
-                // Offset the index since we do not need to track the indices
-                // associated with the "default" (unlabeled) category
-                store.categoriesAndIndices[newValue - 1].indices[imageId].add(index);
+            if (newValue > 0) {
+                const categoryData = store.categoriesAndIndices[newValue - 1];
+                if (categoryData && categoryData.indices && categoryData.indices[imageId]) {
+                    categoryData.indices[imageId].add(index);
+                }
             }
         });
 
@@ -503,8 +516,10 @@ const ActiveLearningView = View.extend({
             if (this.annotationsByImageId[imageId].labels) {
                 const labelPixelmapElement = this.annotationsByImageId[imageId].labels.get('annotation').elements[0];
                 store.categoriesAndIndices = _.forEach(store.categoriesAndIndices, (data) => {
+                    console.log("aaaa")
                     data.indices[imageId] = new Set();
                 });
+                console.log("BBB")
                 this.updateCategoriesAndData(labelPixelmapElement, imageId);
             }
         });

@@ -54,6 +54,7 @@ export default Vue.extend({
             const categories = store.categories;
             return _.filter(categories, (c) => !['default'].includes(c.label));
         },
+        // This one decides the bounding box preview thumbnail in the filmstrip
         wsiRegionUrl() {
             const imageId = this.imageId;
             const bbox = this.superpixelDecision.bbox;
@@ -62,15 +63,18 @@ export default Vue.extend({
             const scaleFactor = Math.max(regionWidth, regionHeight);
             const thumbnailWidth = Math.floor(125 * regionWidth / scaleFactor);
             const thumbnailHeight = Math.floor(125 * regionHeight / scaleFactor);
-            const params = `?left=${bbox[0]}&top=${bbox[1]}&right=${bbox[2]}&bottom=${bbox[3]}&width=${thumbnailWidth}&height=${thumbnailHeight}`;
+            const scale = this.superpixelDecision.scale;
+            const params = `?left=${bbox[0] * scale}&top=${bbox[1] * scale}&right=${bbox[2] * scale}&bottom=${bbox[3] * scale}&width=${thumbnailWidth}&height=${thumbnailHeight}`;
             return `${store.apiRoot}/item/${imageId}/tiles/region${params}`;
         },
+        // This one decides the underlying tile to fetch for the preview
         superpixelRegionUrl() {
             const imageId = this.superpixelDecision.superpixelImageId;
             const index = this.superpixelDecision.index;
             const pixelVals = this.superpixelDecision.boundaries ? [index * 2, index * 2 + 1] : [index];
             const bbox = this.superpixelDecision.bbox;
             const scale = this.superpixelDecision.scale;
+
             const regionWidth = bbox[2] - bbox[0];
             const regionHeight = bbox[3] - bbox[1];
             const scaleFactor = Math.max(regionWidth, regionHeight);
