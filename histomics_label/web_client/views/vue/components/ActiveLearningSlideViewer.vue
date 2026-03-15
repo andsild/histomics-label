@@ -274,14 +274,19 @@ export default Vue.extend({
             }
             // Center the selected superpixel
             const bbox = superpixel.bbox;
-            const bboxWidth = bbox[2] - bbox[0];
-            const bboxHeight = bbox[3] - bbox[1];
+            const scale = superpixel.scale;
+            const x1 = bbox[0] * scale;
+            const y1 = bbox[1] * scale;
+            const x2 = bbox[2] * scale;
+            const y2 = bbox[3] * scale;
+            const bboxWidth = x2 - x1;
+            const bboxHeight = y2 - y1;
             const scaleX = Math.abs((2 * bboxWidth) / this.currentImageMetadata.sizeX);
             const scaleY = Math.abs((2 * bboxHeight) / this.currentImageMetadata.sizeY);
             const zoom = this.initialZoom - Math.log2(Math.max(scaleX, scaleY));
             const center = {
-                x: (bbox[0] + bbox[2]) / 2,
-                y: (bbox[1] + bbox[3]) / 2
+                x: (x1 + x2) / 2,
+                y: (y1 + y2) / 2
             };
             // Draw bounding box around selected superpixel
             this.viewerWidget.viewer.zoomAndCenter(zoom - 1.5, center);
@@ -301,7 +306,7 @@ export default Vue.extend({
             });
             this.viewerWidget.viewer.draw();
             this.boundingBoxFeature.data([[
-                [bbox[0], bbox[1]], [bbox[2], bbox[1]], [bbox[2], bbox[3]], [bbox[0], bbox[3]]
+                [x1, y1], [x2, y1], [x2, y2], [x1, y2]
             ]]);
             this.featureLayer.draw();
         },
